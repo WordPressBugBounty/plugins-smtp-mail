@@ -1,0 +1,231 @@
+/*
+ * SMTP Mail: http://photoboxone.com/
+ */
+.clearfix:before,
+.clearfix:after {
+	display: block;
+	content: '';
+	clear: both;
+	height: 0;
+	overflow: hidden
+}
+
+.smtpmail_settings {
+	display: flex;
+	justify-content: space-between;
+}
+
+.smtpmail_advanced {
+	width: 100%;
+}
+
+.smtpmail_sidebar {
+	width: 360px;
+	max-width: 100%;
+	padding-left: 15px;
+}
+
+.smtpmail_settings img {
+	max-width: 100%;
+}
+
+.smtpmail_settings em,
+.smtpmail_settings i {
+	font-style: italic;
+}
+
+.smtpmail_settings strong,
+.smtpmail_settings b {
+	font-weight: bold;
+}
+
+.smtpmail_advanced label {
+	display: inline-block;
+	min-width: 200px;
+	max-width: 100%;
+	vertical-align: top;
+}
+
+.smtpmail_advanced .inputbox {
+	display: inline-block;
+	width: 280px;
+	max-width: 100%;
+}
+
+.smtpmail_settings .col-md-6 {
+	float: left;
+	width: 50%;
+	padding: 0 10px;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.smtpmail_tabmenu {
+	padding: 0 0 0 10px;
+}
+
+.smtpmail_tabmenu ul {
+	margin: 0;
+	padding: 0;
+}
+
+.smtpmail_tabmenu li {
+	display: inline-block;
+	cursor: pointer;
+	border: 1px solid #999;
+	margin-bottom: -1px;
+	background: #e5e5e5;
+	color: #555;
+	font-weight: bold;
+}
+
+.smtpmail_tabmenu li:hover {
+	background: #fff;
+	color: #444;
+}
+
+.smtpmail_tabmenu li.active {
+	border-bottom: 1px solid #f1f1f1;
+	background: #f1f1f1;
+	color: #000;
+}
+
+.smtpmail_tabmenu li a {
+	color: #000;
+	text-decoration: none;
+	outline: none;
+	padding: 5px 10px;
+	display: block;
+}
+
+.smtpmail_tabitems {
+	border: 1px solid #999;
+	padding: 10px;
+}
+
+.smtpmail_tabitem {
+	display: none;
+}
+
+.smtpmail_tabitem.active {
+	display: block;
+}
+
+.smtpmail_detail_form .message-box {
+	padding: 10px;
+	border: 1px solid #ddd;
+	background: #f7f7f7;
+}
+
+.smtpmail-icon-click {
+	position: relative;
+	animation: smtpmail_left 1s ease-in-out infinite;
+	display: inline-block;
+	width: 30px;
+}
+
+.smtpmail-icon-click .dashicons-arrow-right-alt:before {
+	color: #f00;
+}
+
+.smtpmail_sidebar_box {
+	background: #fff;
+	margin-bottom: 10px;
+	border: 1px solid #ddd;
+	padding: 10px;
+}
+
+.smtpmail_sidebar_box h4 {
+	margin-top: 0;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.smtpmail_settings_footer .smtpmail_sidebar_box {
+	width: 45%;
+}
+
+@media screen and (max-width: 766px) {
+
+	.smtpmail_settings_footer .smtpmail_sidebar_box,
+	.smtpmail_settings .col-md-6 {
+		float: none;
+		width: auto;
+	}
+
+	.smtpmail_sidebar,
+	.smtpmail_advanced,
+	.smtpmail_settings {
+		display: block;
+	}
+
+	.smtpmail_settings p.search-box {
+		position: static;
+	}
+
+	.tablenav.top {
+		display: none;
+	}
+}
+
+.smtpmail_links {
+	bottom: 10px;
+	min-height: 10px;
+	height: 10px;
+	height: auto !important;
+}
+
+.smtpmail_links li {
+	display: block;
+	float: left;
+	right: 15px;
+	line-height: 20px
+}
+
+.smtpmail_links li img {
+	vertical-align: middle;
+}
+
+.smtpmail_links li strong {
+	font-weight: normal;
+}
+
+.smtpmail_links li em {
+	font-style: none;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.inline-table {
+	display: inline-table;
+}
+
+.display-table {
+	display: table;
+}
+
+.table-cell {
+	display: table-cell;
+}
+
+@-webkit-keyframes smtpmail_left {
+	0% {
+		left: 0;
+	}
+
+	100% {
+		left: 10px;
+	}
+}
+
+@keyframes smtpmail_left {
+	0% {
+		left: 0;
+	}
+
+	100% {
+		left: 10px;
+	}
+}

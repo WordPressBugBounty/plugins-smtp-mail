@@ -1,0 +1,30 @@
+.pbone-plugins {
+	padding-top: 30px;
+}
+.pbone-plugins .plugin-card {
+	padding: 10px;
+}
+.pbone-plugins .entry-thumbnail{
+	width: 150px;
+	float: left;
+}
+.pbone-plugins .plugin-icon{
+	position: static;
+}
+.pbone-plugins .wporg-ratings {
+	display: inline-block;
+}
+.pbone-plugins .rating-count{
+	color: #999;
+	font-size: .8rem;
+}
+.pbone-plugins .rating-count a{ 
+	color: #999;
+}
+.pbone-plugins i{
+	font-style: normal; 
+}
+.pbone-plugins hr,
+.pbone-plugins footer{
+	display: none;
+}
