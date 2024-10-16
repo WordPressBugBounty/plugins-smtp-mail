@@ -449,9 +449,9 @@ function smtpmail_sendmail_form()
 				</td>
 			</tr>
 			<tr style="border-top: 1px solid #ddd">
-				<th colspan=2>
-					<input type="submit" name="send_test" id="send_test" class="button button-primary" value="Send">
-					</td>
+				<td colspan=2>
+					<input type="submit" name="send_test" id="send_test" class="button button-primary" value="<?php _e('Send', 'smtp-mail'); ?>">
+				</td>
 			</tr>
 		</table>
 	</form>

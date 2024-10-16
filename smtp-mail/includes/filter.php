@@ -36,7 +36,7 @@ add_filter('smtpmail_get_option', 'smtpmail_filter_smtpmail_option', 10, 2);
 function smtpmail_filter_smtpmail_options($list = [])
 {
 	foreach($list as $key => $value) {
-		$list[$key] = smtpmail_filter_smtpmail_option($value, $key, $list);
+		$list[$key] = smtpmail_filter_smtpmail_option($value, $key);
 	}
 
 	return $list;
