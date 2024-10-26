@@ -279,8 +279,9 @@ function smtpmail_phpmailer_setting($phpmailer = null)
 	if ($IsHTML) {
 		$phpmailer->IsHTML(true);
 		$message = $phpmailer->Body;
+		
+		// no contains HTML
 		if ($message == strip_tags($message)) {
-			// no contains HTML
 			$phpmailer->Body = '<p>' . str_replace("\n", '</p><p>', $message) . '</p>';
 		}
 	}
@@ -309,9 +310,9 @@ function smtpmail_phpmailer_before_send($phpmailer = null)
 	$emails = array();
 	$names = array();
 	if (is_array($list)) {
-		foreach ($list as $array) {
-			$emails[] = $array[0];
-			$names[] = $array[1];
+		foreach ($list as $item) {
+			$emails[] = $item[0];
+			$names[] = isset($item[1])?$item[1]:__('No name');
 		}
 	}
 
