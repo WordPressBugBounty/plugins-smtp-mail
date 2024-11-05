@@ -14,8 +14,8 @@ function smtpmail_plugin_actions($actions = [], $plugin_file = '')
 	if ($plugin_file == plugin_basename(smtpmail_index())) {
 		array_unshift(
 			$actions,
-			'<a href="' . smtpmail_setting_url() . '">' . __("Settings") . "</a>",
-			'<a href="' . smtpmail_pbone_url('contact') . '" target="_blank">' . __("Support") . "</a>"
+			'<a href="' . smtpmail_setting_url() . '">' . __("Settings", 'smtp-mail') . "</a>",
+			'<a href="' . smtpmail_pbone_url('contact') . '" target="_blank">' . __("Support", 'smtp-mail') . "</a>"
 		);
 	}
 
@@ -99,31 +99,31 @@ function smtpmail_setting_display()
 		<div class="smtpmail_advanced clearfix">
 			<div class="smtpmail_tabmenu clearfix">
 				<ul>
-					<li class="<?php esc_attr_e($tab == '' ? 'active' : ''); ?>">
+					<li class="<?php echo esc_attr($tab == '' ? 'active' : ''); ?>">
 						<a href="<?php echo smtpmail_setting_url() ?>"><?php _e('General', 'smtp-mail'); ?></a>
 					</li>
-					<li class="<?php esc_attr_e($tab == 'test' ? 'active' : ''); ?>">
+					<li class="<?php echo esc_attr($tab == 'test' ? 'active' : ''); ?>">
 						<a href="<?php echo smtpmail_setting_url(['tab' => 'test']) ?>"><?php _e('Send test', 'smtp-mail'); ?></a>
 					</li>
-					<li class="<?php esc_attr_e($tab == 'list' ? 'active' : ''); ?>">
+					<li class="<?php echo esc_attr($tab == 'list' ? 'active' : ''); ?>">
 						<a href="<?php echo smtpmail_setting_url(['tab' => 'list']) ?>"><?php _e('Data', 'smtp-mail'); ?></a>
 					</li>
-					<!-- <li class="<?php esc_attr_e($tab == 'more' ? 'active' : ''); ?>">
+					<!-- <li class="<?php echo esc_attr($tab == 'more' ? 'active' : ''); ?>">
 						<a href="<?php echo smtpmail_setting_url(['tab' => 'more']) ?>"><?php _e('Plugins', 'smtp-mail'); ?></a>
 					</li> -->
 				</ul>
 			</div>
 			<div class="smtpmail_tabitems clearfix">
-				<div class="smtpmail_tabitem item-1<?php esc_attr_e($tab == '' ? ' active' : ''); ?>">
+				<div class="smtpmail_tabitem item-1<?php echo esc_attr($tab == '' ? ' active' : ''); ?>">
 					<?php smtpmail_setting_form($options); ?>
 				</div>
-				<div class="smtpmail_tabitem item-2<?php esc_attr_e($tab == 'test' ? ' active' : ''); ?>">
+				<div class="smtpmail_tabitem item-2<?php echo esc_attr($tab == 'test' ? ' active' : ''); ?>">
 					<?php smtpmail_sendmail_form($options); ?>
 				</div>
-				<div class="smtpmail_tabitem item-3<?php esc_attr_e($tab == 'list' ? ' active' : ''); ?>">
+				<div class="smtpmail_tabitem item-3<?php echo esc_attr($tab == 'list' ? ' active' : ''); ?>">
 					<?php smtpmail_data_list($options); ?>
 				</div>
-				<div class="smtpmail_tabitem item-4<?php esc_attr_e($tab == 'more' ? ' active' : ''); ?>">
+				<div class="smtpmail_tabitem item-4<?php echo esc_attr($tab == 'more' ? ' active' : ''); ?>">
 					<?php
 					smtpmail_include('plugins.html');
 					?>
@@ -232,14 +232,14 @@ function smtpmail_setting_form($options = array())
 	extract($options);
 
 	$types = array(
-		'Mail',
-		'SMTP',
-		'SendGrid',
+		__('Mail', 'smtp-mail'),
+		__('SMTP', 'smtp-mail'),
+		__('SendGrid', 'smtp-mail'),
 	);
 	?>
 	<form action="options.php" method="post">
 		<?php settings_fields('smtpmail_settings'); ?>
-		<input type="hidden" name="smtpmail_options[time]" value="<?php esc_attr_e($time); ?>" />
+		<input type="hidden" name="smtpmail_options[time]" value="<?php echo esc_attr($time); ?>" />
 		<table class="form-table">
 			<tr>
 				<th scope="row">
@@ -248,21 +248,21 @@ function smtpmail_setting_form($options = array())
 				<td>
 					<select name="smtpmail_options[isSMTP]" id="smtpmail_options_isSMTP"><?php
 						foreach ($types as $i => $value) {
-							echo '<option value="' . $i . '" ' . ($isSMTP == $i ? " selected" : "") . '>' . __($value, 'smtp-mail') . '</option>';
+							echo '<option value="' . $i . '" ' . ($isSMTP == $i ? " selected" : "") . '>' . $value . '</option>';
 						}
 					?></select>
 				</td>
 			</tr>
-			<tr class="sendgrid-setting<?php esc_attr_e($isSMTP != 2 ? " hidden" : "") ?>">
+			<tr class="sendgrid-setting<?php echo esc_attr($isSMTP != 2 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_sendgrid_api_key"><?php _e('SendGrid API Key', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input value="<?php esc_attr_e($sendgrid_api_key); ?>" type="text" name="smtpmail_options[sendgrid_api_key]" id="smtpmail_options_sendgrid_api_key" class="regular-text ltr" />
+					<input value="<?php echo esc_attr($sendgrid_api_key); ?>" type="text" name="smtpmail_options[sendgrid_api_key]" id="smtpmail_options_sendgrid_api_key" class="regular-text ltr" />
 					<span><?php _e('API key', 'smtp-mail'); ?></span>
 				</td>
 			</tr>
-			<tr class="smtp-setting<?php esc_attr_e($isSMTP != 1 ? " hidden" : "") ?>">
+			<tr class="smtp-setting<?php echo esc_attr($isSMTP != 1 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_SMTPSecure"><?php _e('SMTP Secure', 'smtp-mail'); ?>:</label>
 				</th>
@@ -274,7 +274,7 @@ function smtpmail_setting_form($options = array())
 					</select>
 				</td>
 			</tr>
-			<tr class="smtp-setting<?php esc_attr_e($isSMTP != 1 ? " hidden" : "") ?>">
+			<tr class="smtp-setting<?php echo esc_attr($isSMTP != 1 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_SMTPAuth"><?php _e('SMTP Auth', 'smtp-mail'); ?>:</label>
 				</th>
@@ -285,36 +285,36 @@ function smtpmail_setting_form($options = array())
 					</select>
 				</td>
 			</tr>
-			<tr class="smtp-setting<?php esc_attr_e($isSMTP != 1 ? " hidden" : "") ?>">
+			<tr class="smtp-setting<?php echo esc_attr($isSMTP != 1 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_Port"><?php _e('Port', 'smtp-mail'); ?>: (25, 465, 587)</label>
 				</th>
 				<td>
-					<input value="<?php esc_attr_e($Port); ?>" type="number" name="smtpmail_options[Port]" id="smtpmail_options_Port" class="regular-text ltr" placeholder="25, 465, 587" />
+					<input value="<?php echo esc_attr($Port); ?>" type="number" name="smtpmail_options[Port]" id="smtpmail_options_Port" class="regular-text ltr" placeholder="25, 465, 587" />
 				</td>
 			</tr>
-			<tr class="smtp-setting<?php esc_attr_e($isSMTP != 1 ? " hidden" : "") ?>">
+			<tr class="smtp-setting<?php echo esc_attr($isSMTP != 1 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_Host"><?php _e('Host (Server)', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input value="<?php esc_attr_e($Host); ?>" type="text" name="smtpmail_options[Host]" id="smtpmail_options_Host" class="regular-text ltr" placeholder="mail.domain.com" />
+					<input value="<?php echo esc_attr($Host); ?>" type="text" name="smtpmail_options[Host]" id="smtpmail_options_Host" class="regular-text ltr" placeholder="mail.domain.com" />
 				</td>
 			</tr>
-			<tr class="smtp-setting<?php esc_attr_e($isSMTP != 1 ? " hidden" : "") ?>">
+			<tr class="smtp-setting<?php echo esc_attr($isSMTP != 1 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_Username"><?php _e('Username', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input value="<?php esc_attr_e($Username); ?>" type="text" name="smtpmail_options[Username]" id="smtpmail_options_Username" class="regular-text ltr" placeholder="username or noreply@domain.com" />
+					<input value="<?php echo esc_attr($Username); ?>" type="text" name="smtpmail_options[Username]" id="smtpmail_options_Username" class="regular-text ltr" placeholder="username or noreply@domain.com" />
 				</td>
 			</tr>
-			<tr class="smtp-setting<?php esc_attr_e($isSMTP != 1 ? " hidden" : "") ?>">
+			<tr class="smtp-setting<?php echo esc_attr($isSMTP != 1 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_Password"><?php _e('Password', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input value="<?php esc_attr_e($Password); ?>" type="password" name="smtpmail_options[Password]" id="smtpmail_options_Password" class="regular-text ltr" placeholder="pass@2371627" />
+					<input value="<?php echo esc_attr($Password); ?>" type="password" name="smtpmail_options[Password]" id="smtpmail_options_Password" class="regular-text ltr" placeholder="pass@2371627" />
 				</td>
 			</tr>
 			<tr>
@@ -322,7 +322,7 @@ function smtpmail_setting_form($options = array())
 					<label for="smtpmail_options_From"><?php _e('From Email', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input value="<?php esc_attr_e($From); ?>" type="email" name="smtpmail_options[From]" id="smtpmail_options_From" class="regular-text ltr" placeholder="noreply@domain.com" />
+					<input value="<?php echo esc_attr($From); ?>" type="email" name="smtpmail_options[From]" id="smtpmail_options_From" class="regular-text ltr" placeholder="noreply@domain.com" />
 				</td>
 			</tr>
 			<tr>
@@ -330,7 +330,7 @@ function smtpmail_setting_form($options = array())
 					<label for="smtpmail_options_FromName"><?php _e('From Name', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input value="<?php esc_attr_e($FromName); ?>" type="text" name="smtpmail_options[FromName]" id="smtpmail_options_FromName" class="regular-text ltr" placeholder="<?php _e('Site name', 'smtp-mail'); ?>" />
+					<input value="<?php echo esc_attr($FromName); ?>" type="text" name="smtpmail_options[FromName]" id="smtpmail_options_FromName" class="regular-text ltr" placeholder="<?php _e('Site name', 'smtp-mail'); ?>" />
 				</td>
 			</tr>
 			<tr>
@@ -344,7 +344,7 @@ function smtpmail_setting_form($options = array())
 					</select>
 				</td>
 			</tr>
-			<tr class="smtp-setting<?php esc_attr_e($isSMTP != 1 ? " hidden" : "") ?>">
+			<tr class="smtp-setting<?php echo esc_attr($isSMTP != 1 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_SMTPAutoTLS"><?php _e('SMTP Auto TLS', 'smtp-mail'); ?>:</label>
 				</th>
@@ -355,7 +355,7 @@ function smtpmail_setting_form($options = array())
 					</select>
 				</td>
 			</tr>
-			<tr class="unsendgrid-setting<?php esc_attr_e($isSMTP == 2 ? " hidden" : "") ?>">
+			<tr class="unsendgrid-setting<?php echo esc_attr($isSMTP == 2 ? " hidden" : "") ?>">
 				<th scope="row">
 					<label for="smtpmail_options_SMTPDebug"><?php _e('SMTP Debug', 'smtp-mail'); ?>:</label>
 				</th>
@@ -393,7 +393,7 @@ function smtpmail_setting_form($options = array())
 			</tr>
 			<tr style="border-top: 1px solid #ddd">
 				<th colspan=2>
-					<input type="submit" class="button button-primary" value="<?php _e('Save'); ?>" />
+					<input type="submit" class="button button-primary" value="<?php _e('Save', 'smtp-mail'); ?>" />
 				</th>
 			</tr>
 		</table>
@@ -421,7 +421,7 @@ function smtpmail_sendmail_form()
 					<label><?php _e('Name', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input name="name" type="text" value="<?php esc_attr_e($name); ?>" class="regular-text ltr" />
+					<input name="name" type="text" value="<?php echo esc_attr($name); ?>" class="regular-text ltr" />
 				</td>
 			</tr>
 			<tr>
@@ -429,7 +429,7 @@ function smtpmail_sendmail_form()
 					<label><?php _e('Email', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input name="email" type="email" value="<?php esc_attr_e($email); ?>" class="regular-text ltr" />
+					<input name="email" type="email" value="<?php echo esc_attr($email); ?>" class="regular-text ltr" />
 				</td>
 			</tr>
 			<tr>
@@ -437,7 +437,7 @@ function smtpmail_sendmail_form()
 					<label><?php _e('Subject', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<input name="subject" type="text" value="<?php esc_attr_e($subject); ?>" class="regular-text ltr" />
+					<input name="subject" type="text" value="<?php echo esc_attr($subject); ?>" class="regular-text ltr" />
 				</td>
 			</tr>
 			<tr>
@@ -445,7 +445,7 @@ function smtpmail_sendmail_form()
 					<label><?php _e('Message', 'smtp-mail'); ?>:</label>
 				</th>
 				<td>
-					<textarea name="message" id="message" rows="8" cols="40" class="large-text code"><?php esc_attr_e($message); ?></textarea>
+					<textarea name="message" id="message" rows="8" cols="40" class="large-text code"><?php echo esc_attr($message); ?></textarea>
 				</td>
 			</tr>
 			<tr style="border-top: 1px solid #ddd">

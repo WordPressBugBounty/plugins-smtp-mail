@@ -107,7 +107,7 @@ function smtpmail_recommend_cf7_review_tab_example()
 	<div id="wpcf7_preview_tab_example" style="min-height: 400px;">
 		<?php
 		if( smtpmail_cf7_preview_exists() == false ) :
-			_e('Please install `Preview form for Contact Form 7` plugin.', 'smtp-mail');
+			_e('Please install Preview form for Contact Form 7 plugin.', 'smtp-mail');
 		?>
 			<br /><br />
 			<a rel="bookmark" href="<?php echo esc_url( smtpmail_cf7_preview_install_url() );?>" class="button button-primary" target="_parent">

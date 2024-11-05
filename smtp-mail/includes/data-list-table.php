@@ -212,7 +212,7 @@ class SMTPMail_Data_List_Table extends WP_List_Table {
      **************************************************************************/
     function get_bulk_actions() {
         $actions = array(
-            'delete' => __('Delete'),
+            'delete' => __('Delete', 'smtp-mail'),
         );
 
         return $actions;
@@ -250,7 +250,7 @@ class SMTPMail_Data_List_Table extends WP_List_Table {
 
         if ($message != '') {
             echo '<div id="message" class="notice ' . esc_attr($class) . ' is-dismissible">
-				' . $message . '<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.') . '</span></button>
+				' . $message . '<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'smtp-mail') . '</span></button>
 			</div>';
         }
     }
@@ -590,7 +590,7 @@ function smtpmail_render_customer_list_page()
             <!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
             <form id="customers-filter" method="get">
                 <!-- For plugins, we also need to ensure that the form posts back to our current page -->
-                <input type="hidden" name="page" value="<?php esc_attr_e($page);?>" />
+                <input type="hidden" name="page" value="<?php echo esc_attr($page);?>" />
                 <input type="hidden" name="tab" value="list" />
                 <?php wp_nonce_field('delete-nonce', 'token') ?>
                 <!-- Now we can render the completed list table -->
@@ -622,7 +622,7 @@ function smtpmail_render_customer_list_page()
  */
 function smtpmail_render_customer_detail_form( $item )
 {
-    $subject = isset($item->subject) ? 'Reply to '.$item->subject : '';
+    $subject = isset($item->subject) ? __('Reply to ', 'smtp-mail') . $item->subject : '';
     $message = isset($item->message) ? $item->message : '';
 
     $whois_link = '';
@@ -638,7 +638,7 @@ function smtpmail_render_customer_detail_form( $item )
     ?>
     <form action="<?php echo esc_url( admin_url('options-general.php?page='.$page.'&tab=detail&code=' . $item->id ) );?>" method="post" class="smtpmail_detail_form">
         <h3><?php _e('Guest Message', 'smtp-mail') ;?>:</h3>
-        <div class="message-box"><?php esc_html_e( nl2br( $message ) );?></div>
+        <div class="message-box"><?php echo esc_html( nl2br( $message ) );?></div>
         <?php if( $whois_link!='' ):?>
         <h3>
             <a href="<?php echo $whois_link; ?>" target="_blank" rel="help">
@@ -665,7 +665,7 @@ function smtpmail_render_customer_detail_form( $item )
         </p>
         <p>
             <label><?php _e( 'Subject', 'smtp-mail' ); ?>:</label>
-            <input name="subject" type="text" value="<?php esc_attr_e( $subject ); ?>" class="inputbox required" />
+            <input name="subject" type="text" value="<?php echo esc_attr( $subject ); ?>" class="inputbox required" />
         </p>
         <p>
             <label><?php _e( 'Message', 'smtp-mail' ); ?>:</label>

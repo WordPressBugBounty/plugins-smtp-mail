@@ -312,7 +312,7 @@ function smtpmail_phpmailer_before_send($phpmailer = null)
 	if (is_array($list)) {
 		foreach ($list as $item) {
 			$emails[] = $item[0];
-			$names[] = isset($item[1])?$item[1]:__('No name');
+			$names[] = isset($item[1])?$item[1]:__('No name', 'smtp-mail');
 		}
 	}
 
