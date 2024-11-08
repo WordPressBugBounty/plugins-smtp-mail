@@ -65,10 +65,7 @@ function smtpmail_init_theme_opotion()
 	);
 
 	register_setting('smtpmail_settings', 'smtpmail_options');
-
-	// Pbone
-	wp_enqueue_style('pbone', smtpmail_assets_url('pbone.css'), '', smtpmail_ver());
-
+	
 	// Styles
 	wp_enqueue_style('smtpmail', smtpmail_assets_url('admin.css'), '', smtpmail_ver());
 	wp_enqueue_script('smtpmail', smtpmail_assets_url('admin.min.js'), array('jquery'), smtpmail_ver(), true);
