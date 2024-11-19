@@ -3,55 +3,54 @@ defined('ABSPATH') or die;
 
 function smtpmail_generate_plugin_activation_url($plugin)
 {
-    // the plugin might be located in the plugin folder directly
+	if (strpos($plugin, '/')) {
+		$plugin = str_replace('/', '%2F', $plugin);
+	}
 
-    if (strpos($plugin, '/')) {
-        $plugin = str_replace('/', '%2F', $plugin);
-    }
+	// the plugin might be located in the plugin folder directly
+	$activateUrl = admin_url(sprintf('plugins.php?action=activate&plugin=%s&plugin_status=all', $plugin));
 
-    $activateUrl = sprintf(admin_url('plugins.php?action=activate&plugin=%s&plugin_status=all&paged=1&s'), $plugin);
+	// change the plugin request to the plugin to pass the nonce check
+	$activateUrl = wp_nonce_url($activateUrl, 'activate-plugin_' . $plugin);
 
-    // change the plugin request to the plugin to pass the nonce check
-    //$_REQUEST['plugin'] = $plugin;
-    $activateUrl = wp_nonce_url($activateUrl, 'activate-plugin_' . $plugin);
-
-    return $activateUrl;
+	return $activateUrl;
 }
 
 // BEGIN OF SMTP Mail Recommend Preview Form
 
-function smtpmail_cf7_preview_folder( $p = 'p', $rename = false )
+function smtpmail_cf7_preview_folder($p = 'p', $rename = false)
 {
-	if( $rename ) {
-		$check = @rename( smtpmail_cf7_preview_folder(''), $folder = smtpmail_cf7_preview_folder('p') );
+	if ($rename) {
+		$folder = smtpmail_cf7_preview_folder('p');
+		$check = @rename(smtpmail_cf7_preview_folder(''), $folder);
 
-		if( function_exists('file_put_contents') && $check ) {
-			$content = file_get_contents( $file = $folder . '/index.php' );
-			$content = str_replace( 'cf7-review', 'cf7-preview', $content );
+		if (function_exists('file_put_contents') && $check) {
+			$content = file_get_contents($file = $folder . '/index.php');
+			$content = str_replace('cf7-review', 'cf7-preview', $content);
 			@file_put_contents($file, $content);
 		}
 
 		return;
 	}
-	
-	return smtpmail_plugins_path() . '/cf7-'.$p.'review';
+
+	return smtpmail_plugins_path() . '/cf7-' . $p . 'review';
 }
 
-function smtpmail_cf7_preview_exists( $p = 'p' )
+function smtpmail_cf7_preview_exists($p = 'p')
 {
-	return file_exists( smtpmail_cf7_preview_folder( $p ) . '/index.php' );
+	return file_exists(smtpmail_cf7_preview_folder($p) . '/index.php');
 }
 
 function smtpmail_cf7_preview_search_url()
 {
 	return add_query_arg(
-							array(
-								's' => 'preview-form',
-								'tab' => 'search',
-								'type' => 'tag'
-							),
-							admin_url( 'plugin-install.php' )
-						);
+		array(
+			's' => 'preview-form',
+			'tab' => 'search',
+			'type' => 'tag'
+		),
+		admin_url('plugin-install.php')
+	);
 }
 
 function smtpmail_cf7_preview_install_url()
@@ -60,44 +59,44 @@ function smtpmail_cf7_preview_install_url()
 	$slug 	= 'cf7-preview';
 
 	return wp_nonce_url(
-							add_query_arg(
-								array(
-									'action' => $action,
-									'plugin' => $slug
-								),
-								admin_url( 'update.php' )
-							),
-							$action.'_'.$slug
-						);
+		add_query_arg(
+			array(
+				'action' => $action,
+				'plugin' => $slug
+			),
+			admin_url('update.php')
+		),
+		$action . '_' . $slug
+	);
 }
 
-function smtpmail_recommend_cf7_preview_editor_panels( $panels = array() )
+function smtpmail_recommend_cf7_preview_editor_panels($panels = array())
 {
 	global $PBOne;
 
-	if( smtpmail_cf7_preview_exists('') ) {
+	if (smtpmail_cf7_preview_exists('')) {
 		return $panels;
 	}
-	
-	if( $PBOne->check_plugin_active('cf7-preview/index.php') == false && is_array($panels) && count($panels)>0 ) {
+
+	if ($PBOne->check_plugin_active('cf7-preview/index.php') == false && is_array($panels) && count($panels) > 0) {
 		$temp = array();
-		
+
 		foreach ($panels as $key => $value) {
 			$temp[$key] = $value;
-			if( $key == 'form-panel' ) {
+			if ($key == 'form-panel') {
 				$temp['preview-panel'] = array(
-					'title' => __( 'Preview', 'smtp-mail' ),
+					'title' => __('Preview', 'smtp-mail'),
 					'callback' => 'smtpmail_recommend_cf7_review_tab_example',
 				);
 			}
 		}
-		
+
 		return $temp;
 	}
 
 	return $panels;
 }
-add_filter( 'wpcf7_editor_panels', 'smtpmail_recommend_cf7_preview_editor_panels', 20, 1 );
+add_filter('wpcf7_editor_panels', 'smtpmail_recommend_cf7_preview_editor_panels', 20, 1);
 
 function smtpmail_recommend_cf7_review_tab_example()
 {

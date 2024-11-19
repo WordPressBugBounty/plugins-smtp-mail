@@ -10,20 +10,19 @@ defined('ABSPATH') or die();
 function smtpmail_notices()
 {
 	$link = smtpmail_setting_url(['tab' => 'list', 'refer' => 'noti']);
+	?>
+		<div class="smtpmail-notice notice notice-info is-dismissible" data-name="cf7_preview">
+			<p>
+				<strong><?php _e('SMTP Mail', 'smtp-mail'); ?>:</strong>
 
-?>
-	<div class="smtpmail-notice notice notice-info is-dismissible" data-name="cf7_preview">
-		<p>
-			<strong><?php _e('SMTP Mail', 'smtp-mail'); ?>:</strong>
+				<?php _e('You have new feature.', 'smtp-mail'); ?>
 
-			<?php _e('You have new feature.', 'smtp-mail'); ?>
-
-			<a rel="bookmark" href="<?php echo $link ?>" target="_blank">
-				<strong><?php _e('View location in data list', 'smtp-mail'); ?></strong>
-			</a>.
-		</p>
-	</div>
-<?php
+				<a rel="bookmark" href="<?php echo $link ?>" target="_blank">
+					<strong><?php _e('View location in data list', 'smtp-mail'); ?></strong>
+				</a>.
+			</p>
+		</div>
+	<?php
 }
 
 /**
