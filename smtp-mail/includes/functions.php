@@ -9,7 +9,7 @@ defined('ABSPATH') or die();
  */
 function smtpmail_url($path = '')
 {
-	return esc_url(plugins_url($path, smtpmail_index()));
+	return esc_url(plugins_url(ltrim($path, '/'), smtpmail_index()));
 }
 
 /**
@@ -17,7 +17,7 @@ function smtpmail_url($path = '')
  */
 function smtpmail_wp_url($path = '')
 {
-	return esc_url(home_url('wp-includes/js/jquery/' . $path));
+	return esc_url(home_url('wp-includes/js/jquery/' . ltrim($path, '/')));
 }
 
 /**
@@ -39,7 +39,7 @@ function smtpmail_setting_url($args = [])
  */
 function smtpmail_assets_url($path = '')
 {
-	return smtpmail_url('media/' . $path);
+	return smtpmail_url('media/' . ltrim($path, '/'));
 }
 
 /**
@@ -65,7 +65,7 @@ function smtpmail_path($path = '')
  */
 function smtpmail_assets_path($path = '')
 {
-	return smtpmail_path('media/' . $path);
+	return smtpmail_path('media/' . ltrim($path, '/'));
 }
 
 /**
@@ -73,7 +73,7 @@ function smtpmail_assets_path($path = '')
  */
 function smtpmail_wp_path($path = '')
 {
-	return ABSPATH . WPINC . '/js/jquery/' . $path;
+	return ABSPATH . WPINC . '/js/jquery/' . ltrim($path, '/');
 }
 
 /**
@@ -89,7 +89,7 @@ function smtpmail_plugins_path()
  */
 function smtpmail_include($path_file = '')
 {
-	if ($path_file != '' && file_exists($p = smtpmail_path('includes/' . $path_file))) {
+	if ($path_file != '' && file_exists($p = smtpmail_path('includes/' . ltrim($path_file, '/')))) {
 		require $p;
 
 		return true;

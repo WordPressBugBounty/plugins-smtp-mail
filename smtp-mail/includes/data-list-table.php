@@ -79,7 +79,7 @@ class SMTPMail_Data_List_Table extends WP_List_Table {
             case 'id':
                 return (int) $item[$column_name];
             case 'status':
-                return ( intval($item[$column_name]) == 1 ? 'Success' : 'Fail' );
+                return __(intval($item[$column_name]) == 1 ? 'Success' : 'Fail', 'smtp-mail');
             case 'message':
                 return wp_trim_words($item[$column_name], 30);                
             case 'location':
@@ -117,8 +117,8 @@ class SMTPMail_Data_List_Table extends WP_List_Table {
         
         //Build row actions
         $actions = array(
-            'detail' => '<a href="'. esc_url( admin_url('options-general.php?page='.$page.'&tab=list&action=detail&code='.intval($item['id']) ) ).'">Detail</a>',
-            'delete' => '<a href="'. esc_url( admin_url('options-general.php?page='.$page.'&tab=list&action=delete&code='.intval($item['id']) ) ).'&token='.wp_create_nonce('delete-nonce').'">Delete</a>',
+            'detail' => sprintf('<a href="%s">%s</a>', esc_url( admin_url('options-general.php?page='.$page.'&tab=list&action=detail&code='.intval($item['id']) ) ), __('Detail', 'smtp-mail')),
+            'delete' => sprintf('<a href="%s">%s</a>', esc_url( admin_url('options-general.php?page='.$page.'&tab=list&action=delete&code='.intval($item['id']) ) ).'&token='.wp_create_nonce('delete-nonce'), __('Delete', 'smtp-mail')),
         );
         
         //Return the title contents
@@ -163,16 +163,17 @@ class SMTPMail_Data_List_Table extends WP_List_Table {
     function get_columns(){
         $columns = array(
             'cb'        => '<input type="checkbox" />', //Render a checkbox instead of text
-            'id'    	=> 'ID',
-            'subject'  	=> 'Subject',
-            'from_email'  => 'From',
-            'to_email'  => 'To',
-            //'to_name'   => 'Name',
-            'status'    => 'Status',   
-            'message'  	=> 'Message',
-            'created'  	=> 'Created',
-            'location'  => 'Location',
+            'id'    	=> __('ID', 'smtp-mail'),
+            'subject'  	=> __('Subject', 'smtp-mail'),
+            'from_email'=> __('From', 'smtp-mail'),
+            'to_email'  => __('To', 'smtp-mail'),
+            //'to_name' => __('Name', 'smtp-mail'),
+            'status'    => __('Status', 'smtp-mail'),
+            'message'  	=> __('Message', 'smtp-mail'),
+            'created'  	=> __('Created', 'smtp-mail'),
+            'location'  => __('Location', 'smtp-mail'),
         );
+        
         return $columns;
     }
 

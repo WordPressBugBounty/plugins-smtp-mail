@@ -14,8 +14,8 @@ function smtpmail_plugin_actions($actions = [], $plugin_file = '')
 	if ($plugin_file == plugin_basename(smtpmail_index())) {
 		array_unshift(
 			$actions,
-			'<a href="' . smtpmail_setting_url() . '">' . __("Settings", 'smtp-mail') . "</a>",
-			'<a href="' . smtpmail_pbone_url('contact') . '" target="_blank">' . __("Support", 'smtp-mail') . "</a>"
+			sprintf('<a href="%s">%s</a>', smtpmail_setting_url(), __("Settings", 'smtp-mail')),
+			sprintf('<a href="%s" target="_blank">%s</a>', smtpmail_pbone_url('contact'), __("Support", 'smtp-mail'))
 		);
 	}
 
@@ -29,7 +29,7 @@ add_filter("plugin_action_links", "smtpmail_plugin_actions", 10, 2);
 function smtpmail_admin_plugin_row_meta($plugin_meta = array(), $plugin_file = '')
 {
 	if ($plugin_file == plugin_basename(smtpmail_index())) {
-		$plugin_meta[] = '<a class="dashicons-before dashicons-awards" href="' . smtpmail_pbone_url('donate?for=smtp-mail') . '" target="_blank">' . __('Donate', 'smtp-mail') . '</a>';
+		$plugin_meta[] = sprintf('<a class="dashicons-before dashicons-awards" href="%s" target="_blank">%s</a>', smtpmail_pbone_url('donate?for=smtp-mail'), __('Donate 1', 'smtp-mail'));
 	}
 
 	return $plugin_meta;
@@ -105,9 +105,9 @@ function smtpmail_setting_display()
 					<li class="<?php echo esc_attr($tab == 'list' ? 'active' : ''); ?>">
 						<a href="<?php echo smtpmail_setting_url(['tab' => 'list']) ?>"><?php _e('Data', 'smtp-mail'); ?></a>
 					</li>
-					<!-- <li class="<?php echo esc_attr($tab == 'more' ? 'active' : ''); ?>">
+					<li class="<?php echo esc_attr($tab == 'more' ? 'active' : ''); ?>">
 						<a href="<?php echo smtpmail_setting_url(['tab' => 'more']) ?>"><?php _e('Plugins', 'smtp-mail'); ?></a>
-					</li> -->
+					</li>
 				</ul>
 			</div>
 			<div class="smtpmail_tabitems clearfix">
@@ -121,18 +121,16 @@ function smtpmail_setting_display()
 					<?php smtpmail_data_list($options); ?>
 				</div>
 				<div class="smtpmail_tabitem item-4<?php echo esc_attr($tab == 'more' ? ' active' : ''); ?>">
-					<?php
-					smtpmail_include('plugins.html');
-					?>
+					<?php smtpmail_include('plugins.html'); ?>
 				</div>
 			</div>
 		</div>
 		<?php if (smtpmail_show_sidebar_footer($tab) == false) : ?>
 			<div class="smtpmail_sidebar clearfix">
 				<?php
-				smtpmail_help_links();
+					smtpmail_help_links();
 
-				smtpmail_donate_text();
+					smtpmail_donate_text();
 				?>
 			</div>
 		<?php endif; ?>
@@ -140,9 +138,9 @@ function smtpmail_setting_display()
 	<?php if (smtpmail_show_sidebar_footer($tab)) : ?>
 		<div class="wrap smtpmail_settings smtpmail_settings_footer">
 			<?php
-			smtpmail_help_links();
+				smtpmail_help_links();
 
-			smtpmail_donate_text();
+				smtpmail_donate_text();
 			?>
 		</div>
 	<?php

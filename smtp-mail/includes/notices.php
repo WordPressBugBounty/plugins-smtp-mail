@@ -56,7 +56,7 @@ function smtpmail_notice_option($key = '', $set = '')
 	$value = 1;
 
 	if ($set != '') {
-		update_option($key, $set);
+		return update_option($key, $set);
 	} else {
 		$value = (int) get_option($key);
 	}
