@@ -6,11 +6,13 @@ Donate link: http://photoboxone.com/donate/?for=smtp-mail
 Tags: smtp, smtp setting, mail, phpmailer, send test
 Requires at least: 3.5
 Tested up to: 6.7.1
-Stable tag: 1.3.38
+Stable tag: 1.3.39
 
 SMTP settings, mail function, send test, save submitted data ( phpmailer ). It is very easy to configure and fast.
 
 == Description ==
+
+https://www.youtube.com/watch?v=sOjjF0Qg3jM
 
 SMTP settings, mail function, send test, save submitted data ( phpmailer ). It is very easy to configure and fast.
 
@@ -58,7 +60,7 @@ You can help translate `SMTP Mail` plugin on [translate.wordpress.org](https://t
 
 == Changelog ==  
 
-= 1.3.38 =
+= 1.3.38 - 1.3.39 =
 * Updated functions
 * Tested to WordPress 6.7.1
 
