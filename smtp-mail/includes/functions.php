@@ -130,7 +130,7 @@ function smtpmail_sendmail($info)
 	$body = '';
 
 	if (empty($subject)) {
-		$subject = 'Information at ' . current_time( 'timestamp' ) . ' - ' . get_bloginfo('name');
+		$subject = __('Information at', 'smtp-mail') . ' ' . current_time( 'timestamp' ) . ' - ' . get_bloginfo('name');
 	}
 
 	$td_style = 'padding: 10px; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd;';
