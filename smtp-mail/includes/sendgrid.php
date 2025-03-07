@@ -6,7 +6,7 @@ defined('ABSPATH') or die();
 
 function smtpmail_curl_send( $url = '', $post_data = array(), $headers = array() ) 
 {
-	if( filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) == false ) return false;
+    if (filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) == false) return false;
 	
 	$ch = curl_init();
 	$timeout = 5;
@@ -19,8 +19,6 @@ function smtpmail_curl_send( $url = '', $post_data = array(), $headers = array()
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 	curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
-	// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , 1);
-	// curl_setopt($ch, CURLOPT_SSL_VERIFYHOST , 1);
 
     if( count($headers)>0 ) {
         curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -39,7 +37,7 @@ function smtpmail_curl_send( $url = '', $post_data = array(), $headers = array()
 
     // Then, after your curl_exec call:
     $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    $header = substr($response, 0, $header_size);
+    // $header = substr($response, 0, $header_size);
     $body = substr($response, $header_size);
 
 	curl_close($ch);

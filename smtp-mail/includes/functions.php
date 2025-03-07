@@ -123,7 +123,7 @@ function smtpmail_pbone_url($path = '', $utm = '')
  */
 function smtpmail_sendmail($info)
 {
-	if( function_exists('wp_mail') == false ) return false;
+	if (function_exists('wp_mail') == false) return false;
 
 	extract($info);
 
@@ -312,7 +312,7 @@ function smtpmail_phpmailer_before_send($phpmailer = null)
 	if (is_array($list)) {
 		foreach ($list as $item) {
 			$emails[] = $item[0];
-			$names[] = isset($item[1])?$item[1]:__('No name', 'smtp-mail');
+			$names[] = isset($item[1]) ? $item[1] : __('No name', 'smtp-mail');
 		}
 	}
 
@@ -391,7 +391,7 @@ function smtpmail_insert_data($data = array())
  */
 function smtpmail_update_data($data = array())
 {
-	$id = intval(isset($_SERVER['SMTPMAIL_INSERT_ID']) ? $_SERVER['SMTPMAIL_INSERT_ID'] : 0);
+	$id = isset($_SERVER['SMTPMAIL_INSERT_ID']) ? intval($_SERVER['SMTPMAIL_INSERT_ID']) : 0;
 
 	if (count($data) == 0 || $id == 0) return false;
 
@@ -543,9 +543,9 @@ function smtpmail_array_values_by_key($list = array(), $key = '')
  */
 function smtpmail_is_guest($set = 0)
 {
-    global $smtpmail_is_guest;
+	global $smtpmail_is_guest;
 
-    if( isset($smtpmail_is_guest) ) return $smtpmail_is_guest;
+	if (isset($smtpmail_is_guest)) return $smtpmail_is_guest;
 
 	$smtpmail_is_guest = 1;
 
@@ -554,8 +554,8 @@ function smtpmail_is_guest($set = 0)
 		'::1'
 	];
 
-	// Is local
-	if(isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], $list)) {
+	// Is localhost
+	if (isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], $list)) {
 		return $smtpmail_is_guest;
 	} else {
 		$detects = ['wp', 'wordpress'];
@@ -572,12 +572,12 @@ function smtpmail_is_guest($set = 0)
 			}
 		}
 
-		if($set == 1 && defined('SITECOOKIEPATH') && defined('COOKIE_DOMAIN')) {
+		if ($set == 1 && defined('SITECOOKIEPATH') && defined('COOKIE_DOMAIN')) {
 			@setcookie('wp_guest', 1, smtpmail_get_new_expires('time'), SITECOOKIEPATH, COOKIE_DOMAIN, is_ssl());
 		}
 	}
-	
-    return $smtpmail_is_guest;
+
+	return $smtpmail_is_guest;
 }
 
 /*
