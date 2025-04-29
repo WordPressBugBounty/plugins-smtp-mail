@@ -78,9 +78,11 @@ class SMTPMail_Data_List_Table extends WP_List_Table
      **************************************************************************/
     function column_default($item = [], $column_name = '')
     {
+        $value = isset($item[$column_name]) ? $item[$column_name] : '';
+
         switch ($column_name) {
             case 'status':
-                return __($item[$column_name] == 1 ? 'Success' : 'Fail', 'smtp-mail');
+                return $value == 1 ? __('Success', 'smtp-mail') : __('Fail', 'smtp-mail');
             case 'message':
                 return wp_trim_words($item[$column_name], 30);
             case 'location':
@@ -94,7 +96,7 @@ class SMTPMail_Data_List_Table extends WP_List_Table
             case 'subject':
                 return $this->column_title($item);
             default:
-                return isset($item[$column_name]) ? $item[$column_name] : ''; //Show the whole array for troubleshooting purposes
+                return $value; //Show the whole array for troubleshooting purposes
         }
     }
 
@@ -117,11 +119,11 @@ class SMTPMail_Data_List_Table extends WP_List_Table
      **************************************************************************/
     function column_title($item = [])
     {
-        if (empty($_GET['page'])) {
+        $data = wp_unslash($_GET);
+
+        if (empty($data['page']) || empty($item['id'])) {
             return $item;
         }
-
-        $data = wp_unslash($_GET);
 
         $page = sanitize_text_field($data['page']);
 
@@ -269,20 +271,22 @@ class SMTPMail_Data_List_Table extends WP_List_Table
             $token = isset($data['token']) ? sanitize_text_field($data['token']) : '';
             if ($token == '' || !wp_verify_nonce($token, 'delete-nonce')) {
                 $class = 'notice-warning';
-                $message = __('Delete token not verify!', 'smtp-mail');
+                $message = esc_attr__('Delete token not verify!', 'smtp-mail');
             } else if ($this->delete_item() ==  false) {
                 $class = 'notice-error';
-                $message = __('Mail data NULL!', 'smtp-mail');
+                $message = esc_attr__('Mail data NULL!', 'smtp-mail');
             } else {
-                $message = __('Mail data deleted!', 'smtp-mail')
-                    . ' ID (' . (isset($data['customer']) && is_array($data['customer']) ? implode(',', $data['customer']) : $data['code']) . ')';
+                $message = esc_attr__('Mail data deleted!', 'smtp-mail')
+                    . ' ID (' . esc_attr(isset($data['customer']) && is_array($data['customer']) ? implode(',', $data['customer']) : $data['code']) . ')';
             }
         }
 
         if ($message != '') {
-            echo '<div id="message" class="notice ' . esc_attr($class) . ' is-dismissible">
-				' . $message . '<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'smtp-mail') . '</span></button>
-			</div>';
+            echo '<div id="message" class="notice ' . esc_attr($class) . ' is-dismissible">'
+                , esc_attr($message)
+                , '<button type="button" class="notice-dismiss"><span class="screen-reader-text">' 
+                , esc_attr__('Dismiss this notice.', 'smtp-mail')
+                , '</span></button></div>';
         }
     }
 
@@ -305,12 +309,14 @@ class SMTPMail_Data_List_Table extends WP_List_Table
     {
         global $wpdb; //This is used only if making any database queries
 
+        $data = wp_unslash($_POST);
+
         /**
          * First, lets decide how many records per page to show
          */
         $per_page = $this->get_current_user_screen_meta('per_page', 20);
-        if (isset($_POST['per_page']) && intval($_POST['per_page']) > 0) {
-            $per_page = (int) $_POST['per_page'];
+        if (isset($data['per_page']) && intval($data['per_page']) > 0) {
+            $per_page = (int) $data['per_page'];
             $this->update_current_user_screen_meta('per_page', $per_page);
         }
 
@@ -352,24 +358,6 @@ class SMTPMail_Data_List_Table extends WP_List_Table
          */
         //$data = $this->example_data;
 
-        /**
-         * This checks for sorting input and sorts the data in our array accordingly.
-         * 
-         * In a real-world situation involving a database, you would probably want 
-         * to handle sorting by passing the 'orderby' and 'order' values directly 
-         * to a custom query. The returned data will be pre-sorted, and this array
-         * sorting technique would be unnecessary.
-         */
-        function usort_reorder($a, $b)
-        {
-            $orderby = sanitize_text_field((!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'id'); //If no sort, default to title
-            $order = sanitize_text_field((!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc'); //If no order, default to asc
-            $result = strcmp($a[$orderby], $b[$orderby]); //Determine sort order
-            return ($order === 'asc') ? $result : -$result; //Send final sort direction to usort
-        }
-        //usort($data, 'usort_reorder');
-
-
         /***********************************************************************
          * ---------------------------------------------------------------------
          * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -385,24 +373,17 @@ class SMTPMail_Data_List_Table extends WP_List_Table
         global $table_prefix;
 
         $table = $table_prefix . 'smtpmail_data';
-        $query_params = [
-            1
-        ];
 
-        $search = isset($_REQUEST['s']) ? sanitize_text_field($_REQUEST['s']) : ''; //If no sort, default to title
+        $search = smtpmail_get_var('s'); //If no sort, default to title
 
-        $where = ' WHERE id > %d ';
+        $query_string = ' WHERE id > 0 ';
 
         if ($search != '') {
             $wild = '%';
+
             $search = $wild . $wpdb->esc_like($search) . $wild;
 
-            $query_params = [
-                $search,
-                $search
-            ];
-
-            $where .= " AND ( `subject` LIKE %s OR `message` LIKE %s ) ";
+            $query_string .= sprintf(" AND ( `subject` LIKE '%s' OR `message` LIKE '%s' ) ", $search, $search);
         }
 
         /**
@@ -418,32 +399,44 @@ class SMTPMail_Data_List_Table extends WP_List_Table
          * without filtering. We'll need this later, so you should always include it 
          * in your own package classes.
          */
-        $total_items = (int) $wpdb->get_var($wpdb->prepare('SELECT count(*) FROM ' . $table . $where, $query_params));
+        $total_items = (int) $wpdb->get_var($wpdb->prepare('SELECT count(*) FROM %i ', $table) . $query_string);
 
         /**
          * The WP_List_Table class does not handle pagination for us, so we need
          * to ensure that the data is trimmed to only the current page. We can use
          * array_slice() to 
          */
-        //$data = array_slice($data,(($current_page-1)*$per_page),$per_page);
+        // $cache_key = sprintf('smtp-mail-data-%s', $current_page);
+        // if($search != '') {
+        //     $cache_key .= '-'. md5($search);
+        // }
 
-        $query = 'SELECT * FROM ' . $table . $where . ' ORDER BY `id` DESC LIMIT %d, %d';
+        $cache_key = 'smtp-mail-results';
 
-        $query_params[] = ($current_page - 1) * $per_page;
-        $query_params[] = $per_page;
+        $results = wp_cache_get($cache_key, 'smtp-mail');
 
-        $this->items = $wpdb->get_results($wpdb->prepare($query, $query_params), ARRAY_A);
+        if (false === $results) {
+            $offset = ($current_page - 1) * $per_page;
 
-        if (count($this->items) == 0 && intval(smtpmail_options('save_data')) == 0) {
+            $query_string .= $wpdb->prepare('ORDER BY `id` DESC LIMIT %d, %d', $offset, $per_page);
+
+            $results = $wpdb->get_results($wpdb->prepare('SELECT * FROM %i ', $table) . $query_string, ARRAY_A);
+
+            wp_cache_set($cache_key, $results, 'smtp-mail');
+        }
+
+        $this->items = $results;
+
+        if (count($this->items) == 0 && smtpmail_options('save_data', 0) == 0) {
             $this->items[] = array(
-                'id'        => 1,
-                'subject'      => 'Example Data',
-                'from_email' => 'norely@example.com',
-                'to_email'  => 'info@example.com',
-                'status'    => 1,
-                'message'      => 'Message',
-                'created'      => date('Y-m-d'),
-                'params'    => '{"ip":"' . $_SERVER['REMOTE_ADDR'] . '"}',
+                'id'            => 1,
+                'subject'       => 'Example Data',
+                'from_email'    => 'norely@example.com',
+                'to_email'      => 'info@example.com',
+                'status'        => 1,
+                'message'       => 'Message',
+                'created'       => current_time('Y-m-d'),
+                'params'        => '{"ip":"' . smtpmail_get_server('REMOTE_ADDR') . '"}',
             );
         }
 
@@ -468,7 +461,9 @@ class SMTPMail_Data_List_Table extends WP_List_Table
         unset($columns['cb']);
         unset($columns['id']);
 
-        $has_post = count($_POST) > 0;
+        $data = wp_unslash($_POST);
+
+        $has_post = count($data) > 0;
 
         $labels = '';
 
@@ -480,7 +475,7 @@ class SMTPMail_Data_List_Table extends WP_List_Table
             $checked = 1;
 
             $key = $name . '-hide';
-            if ($has_post && empty($_POST[$key])) {
+            if ($has_post && empty($data[$key])) {
                 $updatehiddencolumns[$name] = 1;
                 $checked = 0;
             } else if (isset($hiddencolumns[$name]) && intval($hiddencolumns[$name]) == 1) {
@@ -496,7 +491,6 @@ class SMTPMail_Data_List_Table extends WP_List_Table
         }
 
         $per_page = $this->get_current_user_screen_meta('per_page', 20);
-
 
         echo '<div id="screen-meta" class="metabox-prefs smtpmail_screen_meta_options">
 		<div id="screen-options-wrap" class="hidden" tabindex="-1" aria-label="Screen Options Tab">
@@ -532,25 +526,34 @@ class SMTPMail_Data_List_Table extends WP_List_Table
 
         $data = wp_unslash($_GET);
 
+        $count_deleted = 0;
+
         if (isset($data['customer']) && is_array($data['customer'])) {
             $ids = array_map('intval', $data['customer']);
             if (count($ids) > 0) {
-                $ids = implode(',', $ids);
-                
-                $query = sprintf("DELETE FROM %s WHERE id IN ( %s )", $table_name, $ids);
+                foreach($ids as $id) {
+                    if($id == 0) continue;
 
-                return $wpdb->query($query);
+                    if($wpdb->delete($table_name,['id' => $id], ['%d'])) {
+                        $count_deleted++;
+                    }
+                }
             }
         }
 
         $id = isset($data['code']) ? intval($data['code']) : 0;
         if ($id == 0) return false;
 
-        return $wpdb->delete(
-            $table_name,
-            array('id' => $id),
-            array('%d')
-        );
+        if($wpdb->delete($table_name,['id' => $id], ['%d'])) {
+            $count_deleted++;
+        }
+
+        if($count_deleted > 0) {
+            wp_cache_delete('smtp-mail-results', 'smtp-mail');
+            wp_cache_delete('smtp-mail-result', 'smtp-mail');
+        }
+
+        return $count_deleted > 0;
     }
 
     function get_item($id = 0)
@@ -559,9 +562,14 @@ class SMTPMail_Data_List_Table extends WP_List_Table
 
         $table_name = $wpdb->prefix . 'smtpmail_data';
 
-        $query = "SELECT * FROM %i WHERE `id`= %d ";
+        $result = wp_cache_get('smtp-mail-result', 'smtp-mail');
+        if (false === $result) {
+            $result = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE `id`= %d ", $table_name, $id));
 
-        return $wpdb->get_row($wpdb->prepare($query, $table_name, $id));
+            wp_cache_set('smtp-mail-result', $result, 'smtp-mail');
+        }
+
+        return $result;
     }
 
     function get_current_user_screen_meta($key, $default)
@@ -640,9 +648,9 @@ function smtpmail_render_customer_list_page()
                     <div class="smtpmail-icon-click">
                         <div class="dashicons dashicons-arrow-right-alt"></div>
                     </div>
-                    <strong><?php _e('You need enable option `Save data SendMail` in General tab.', 'smtp-mail'); ?></strong>
+                    <strong><?php esc_attr_e('You need enable option `Save data SendMail` in General tab.', 'smtp-mail'); ?></strong>
                     <hr />
-                    <h3 align=center><?php _e('Example Data SendMail', 'smtp-mail'); ?></h3>
+                    <h3 align=center><?php esc_attr_e('Example Data SendMail', 'smtp-mail'); ?></h3>
                 <?php endif; ?>
 
                 <?php $SMTPMail_Data_Table->search_box('Search', 'subject'); ?>
@@ -670,51 +678,51 @@ function smtpmail_render_customer_detail_form($item)
     $params = json_decode($item->params);
 
     if ($params && is_object($params) && isset($params->ip)) {
-        $whois_link = esc_url('http://whois.photoboxone.com/location/' . $params->ip);
+        $whois_link = 'http://whois.photoboxone.com/location/' . $params->ip;
     }
 
-    $page = sanitize_text_field(isset($_REQUEST['page']) ? $_REQUEST['page'] : '');
+    $page = smtpmail_get_var('page');
 
     ?>
     <form action="<?php echo esc_url(admin_url('options-general.php?page=' . $page . '&tab=detail&code=' . $item->id)); ?>" method="post" class="smtpmail_detail_form">
-        <h3><?php _e('Guest Message', 'smtp-mail'); ?>:</h3>
+        <h3><?php esc_attr_e('Guest Message', 'smtp-mail'); ?>:</h3>
         <div class="message-box"><?php echo esc_html(nl2br($message)); ?></div>
         <?php if ($whois_link != ''): ?>
             <h3>
-                <a href="<?php echo $whois_link; ?>" target="_blank" rel="help">
-                    <?php _e('Where is guest?', 'smtp-mail'); ?>
+                <a href="<?php echo esc_url($whois_link); ?>" target="_blank" rel="help">
+                    <?php esc_attr_e('Where is guest?', 'smtp-mail'); ?>
                 </a>
             </h3>
-            <p>
             <div class="smtpmail-icon-click">
                 <div class="dashicons dashicons-arrow-right-alt"></div>
             </div>
-            <a href="<?php echo $whois_link; ?>" target="_blank" rel="help">
-                <?php _e('View location and map!', 'smtp-mail'); ?>
-            </a>
+            <p>
+                <a href="<?php echo esc_url($whois_link); ?>" target="_blank" rel="help">
+                    <?php esc_attr_e('View location and map!', 'smtp-mail'); ?>
+                </a>
             </p>
         <?php endif; ?>
-        <h3><?php _e('Reply form', 'smtp-mail'); ?></h3>
+        <h3><?php esc_attr_e('Reply form', 'smtp-mail'); ?></h3>
         <p>
-            <label><?php _e('Name', 'smtp-mail'); ?>:</label>
+            <label><?php esc_attr_e('Name', 'smtp-mail'); ?>:</label>
             <input name="name" type="text" autocomplete="false" class="inputbox required" />
         </p>
         <p>
-            <label><?php _e('Email', 'smtp-mail'); ?>:</label>
+            <label><?php esc_attr_e('Email', 'smtp-mail'); ?>:</label>
             <input name="email" type="email" autocomplete="false" class="inputbox required" />
         </p>
         <p>
-            <label><?php _e('Subject', 'smtp-mail'); ?>:</label>
+            <label><?php esc_attr_e('Subject', 'smtp-mail'); ?>:</label>
             <input name="subject" type="text" value="<?php echo esc_attr($subject); ?>" class="inputbox required" />
         </p>
         <p>
-            <label><?php _e('Message', 'smtp-mail'); ?>:</label>
+            <label><?php esc_attr_e('Message', 'smtp-mail'); ?>:</label>
             <textarea name="message" id="message" rows="8" cols="40" class="textareabox required" autocomplete="false"></textarea>
         </p>
         <p class="buttons">
             <label> </label>
             <input type="submit" name="send_test" id="send_test" class="button button-primary" value="Send">
-            <a class="button button-secondary" href="<?php echo esc_url(admin_url('options-general.php?page=' . $page . '&tab=list')); ?>"><?php _e('Cancel', 'smtp-mail'); ?></a>
+            <a class="button button-secondary" href="<?php echo esc_url(admin_url('options-general.php?page=' . $page . '&tab=list')); ?>"><?php esc_attr_e('Cancel', 'smtp-mail'); ?></a>
         </p>
     </form>
 <?php

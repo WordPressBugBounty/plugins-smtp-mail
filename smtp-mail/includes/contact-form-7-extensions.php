@@ -22,12 +22,15 @@ function smtpmail_cf7_preview_folder($p = 'p', $rename = false)
 {
 	if ($rename) {
 		$folder = smtpmail_cf7_preview_folder('p');
-		$check = @rename(smtpmail_cf7_preview_folder(''), $folder);
+		$check = move_dir(smtpmail_cf7_preview_folder(''), $folder);
 
 		if (function_exists('file_put_contents') && $check) {
+			$wp_filesystem = smtpmail_get_wp_filesystem();
+
 			$content = file_get_contents($file = $folder . '/index.php');
 			$content = str_replace('cf7-review', 'cf7-preview', $content);
-			@file_put_contents($file, $content);
+
+			$wp_filesystem->put_contents($file, $content);
 		}
 
 		return;
@@ -106,25 +109,24 @@ function smtpmail_recommend_cf7_review_tab_example()
 	<div id="wpcf7_preview_tab_example" style="min-height: 400px;">
 		<?php
 		if( smtpmail_cf7_preview_exists() == false ) :
-			_e('Please install Preview form for Contact Form 7 plugin.', 'smtp-mail');
+			esc_attr_e('Please install Preview form for Contact Form 7 plugin.', 'smtp-mail');
 		?>
 			<br /><br />
 			<a rel="bookmark" href="<?php echo esc_url( smtpmail_cf7_preview_install_url() );?>" class="button button-primary" target="_parent">
-				<?php _e('Install Now', 'smtp-mail');?>
+				<?php esc_attr_e('Install Now', 'smtp-mail');?>
 			</a>
-		<?php 
+		<?php
 		else :		
-			_e('Please activate `Preview form for Contact Form 7` plugin.', 'smtp-mail');		
+			esc_attr_e('Please activate `Preview form for Contact Form 7` plugin.', 'smtp-mail');		
 		?>
 			<br /><br />
 			<a rel="bookmark" href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button button-primary" target="_parent">
-				<?php _e('Activate Now', 'smtp-mail');?>
+				<?php esc_attr_e('Activate Now', 'smtp-mail');?>
 			</a>
 		<?php endif;?>
 		<a rel="bookmark" href="<?php echo esc_url( $plugin_link );?>" class="button button-second" target="_blank">
-			<?php _e('Visit plugin', 'smtp-mail');?>
+			<?php esc_attr_e('Visit plugin', 'smtp-mail');?>
 		</a>
-		
 		<br /><br />
 	</div>
 	<?php
@@ -158,12 +160,12 @@ function smtpmail_recommend_cf7_preview_notices()
 		?>
 		<div class="contact-form-7-preview-notice-new notice notice-info is-dismissible" data-name="cf7_preview">
 			<p>
-				<strong><?php _e( 'Contact Form 7', 'smtp-mail' ); ?>:</strong>
+				<strong><?php esc_attr_e( 'Contact Form 7', 'smtp-mail' ); ?>:</strong>
 					
-				<?php _e( 'You have new feature: Preview form for Contact Form 7.', 'smtp-mail' ); ?>
+				<?php esc_attr_e( 'You have new feature: Preview form for Contact Form 7.', 'smtp-mail' ); ?>
 				
 				<a rel="bookmark" href="<?php echo esc_url( smtpmail_cf7_preview_install_url() );?>">
-					<strong><?php _e( 'Please install now', 'smtp-mail' ); ?></strong>
+					<strong><?php esc_attr_e( 'Please install now', 'smtp-mail' ); ?></strong>
 				</a>.
 			</p>
 		</div>

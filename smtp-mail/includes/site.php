@@ -4,7 +4,11 @@
  */
 defined('ABSPATH') or die();
 
-// Stop wp
+/*
+ * Stop wp
+ * 
+ * @update 1.3.43
+ */
 function smtpmail_shutdown()
 {
 	// This is our shutdown function, in 
@@ -14,8 +18,8 @@ function smtpmail_shutdown()
 	// echo 'Script executed with success', PHP_EOL;
 
 	// Check wp has send mail 
-	if (isset($_SERVER['SMTPMAIL_WP_MAIL_SENDING']) && $_SERVER['SMTPMAIL_WP_MAIL_SENDING']) {
-		$_SERVER['SMTPMAIL_WP_MAIL_SENDING'] = false;
+	if (smtpmail_get_server('SMTPMAIL_WP_MAIL_SENDING', false)) {
+		unset($_SERVER['SMTPMAIL_WP_MAIL_SENDING']);
 
 		smtpmail_update_data(array(
 			'status' => 1,

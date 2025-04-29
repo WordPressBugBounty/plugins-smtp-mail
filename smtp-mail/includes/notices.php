@@ -13,12 +13,10 @@ function smtpmail_notices()
 	?>
 		<div class="smtpmail-notice notice notice-info is-dismissible" data-name="cf7_preview">
 			<p>
-				<strong><?php _e('SMTP Mail', 'smtp-mail'); ?>:</strong>
-
-				<?php _e('You have new feature.', 'smtp-mail'); ?>
-
-				<a rel="bookmark" href="<?php echo $link ?>" target="_blank">
-					<strong><?php _e('View location in data list', 'smtp-mail'); ?></strong>
+				<strong><?php esc_attr_e('SMTP Mail', 'smtp-mail'); ?>:</strong>
+				<?php esc_attr_e('You have new feature.', 'smtp-mail'); ?>
+				<a rel="bookmark" href="<?php echo esc_url($link) ?>" target="_blank">
+					<strong><?php esc_attr_e('View location in data list', 'smtp-mail'); ?></strong>
 				</a>.
 			</p>
 		</div>

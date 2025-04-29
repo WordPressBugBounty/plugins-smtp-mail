@@ -9,7 +9,7 @@ defined('ABSPATH') or die();
  */
 function smtpmail_url($path = '')
 {
-	return esc_url(plugins_url(ltrim($path, '/'), smtpmail_index()));
+	return plugins_url(ltrim($path, '/'), smtpmail_index());
 }
 
 /**
@@ -17,7 +17,7 @@ function smtpmail_url($path = '')
  */
 function smtpmail_wp_url($path = '')
 {
-	return esc_url(home_url('wp-includes/js/jquery/' . ltrim($path, '/')));
+	return home_url('wp-includes/js/jquery/' . ltrim($path, '/'));
 }
 
 /**
@@ -57,7 +57,7 @@ function smtpmail_ver($type = 0)
  */
 function smtpmail_path($path = '')
 {
-	return dirname(smtpmail_index()) . (substr($path, 0, 1) !== '/' ? '/' : '') . $path;
+	return dirname(smtpmail_index()) . '/' . ltrim($path, '/');
 }
 
 /**
@@ -105,8 +105,10 @@ function smtpmail_pbone_url($path = '', $utm = '')
 {
 	$site = 'https://photoboxone.com/';
 
+	$host = smtpmail_get_server('HTTP_HOST');
+
 	if ($utm == '') {
-		$utm = 'utm_term=smtp-mail&utm_medium=smtp-mail&utm_source=' . urlencode($_SERVER['HTTP_HOST']);
+		$utm = 'utm_term=smtp-mail&utm_medium=smtp-mail&utm_source=' . urlencode($host);
 	}
 
 	if (strpos($path, '?') > -1) {
@@ -154,7 +156,9 @@ function smtpmail_sendmail($info)
 		}
 		$headers[] = "From: $name <$email>";
 	} else {
-		$headers[] = 'From: ' . get_bloginfo('name') . ' <noreply@' . $_SERVER['HOST_NAME'] . '>';
+		$host = smtpmail_get_server('HTTP_HOST');
+
+		$headers[] = 'From: ' . get_bloginfo('name') . ' <noreply@' . esc_attr($host) . '>';
 	}
 
 	return wp_mail($email, $subject, $body, $headers);
@@ -184,11 +188,11 @@ function smtpmail_options($key = '', $default_value = '')
 		'checked' 		=> 0, // Checked
 		'anti_spam_form' => 0, // Security (anti-spam form)
 
-		'time' 			=> '20240425', // Time
+		'time' 			=> '20250428', // Time
 		
 		// Sendgrid API
 		'sendgrid_api_key' => '',
-	), (array)get_option('smtpmail_options'));
+	), (array) get_option('smtpmail_options'));
 
 	if ($key != '') {
 		if(isset($options[$key])) {
@@ -245,7 +249,7 @@ function smtpmail_get_new_expires($format = 'Ymd')
 	if ($format == 'time') {
 		$value = $time;
 	} else {
-		$value = date($format, $time);
+		$value = gmdate($format, $time);
 	}
 
 	return apply_filters('smtpmail_get_new_expires', $value, $format);
@@ -281,8 +285,8 @@ function smtpmail_phpmailer_setting($phpmailer = null)
 		$message = $phpmailer->Body;
 		
 		// no contains HTML
-		if ($message == strip_tags($message)) {
-			$phpmailer->Body = '<p>' . str_replace("\n", '</p><p>', $message) . '</p>';
+		if ($message == wp_strip_all_tags($message)) {
+			$phpmailer->Body = esc_html('<p>' . str_replace("\n", '</p><p>', $message) . '</p>');
 		}
 	}
 
@@ -317,8 +321,8 @@ function smtpmail_phpmailer_before_send($phpmailer = null)
 	}
 
 	$params = array_merge($_POST, array(
-		'ip' => $_SERVER['SERVER_ADDR'],
-		'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+		'ip' =>  smtpmail_get_server('SERVER_ADDR'),
+		'user_agent' =>  smtpmail_get_server('HTTP_USER_AGENT'),
 	));
 
 	$data = array(
@@ -369,21 +373,19 @@ function smtpmail_insert_data($data = array())
 
 	global $wpdb;
 
-	$table_name = $wpdb->prefix . 'smtpmail_data';
-
-	$formats = array();
-
-	foreach ($data as $value) {
-		$formats[] = '%s';
-	}
-
 	$wpdb->insert(
-		$table_name,
+		$wpdb->prefix . 'smtpmail_data',
 		$data,
-		$formats
+		array_map('smtpmail_return_format_string', $data)
 	);
 
-	return $_SERVER['SMTPMAIL_INSERT_ID'] = (int) $wpdb->insert_id;
+	$_SERVER['SMTPMAIL_INSERT_ID'] = $wpdb->insert_id;
+
+	if($wpdb->insert_id > 0) {
+		wp_cache_delete('smtp-mail-results', 'smtp-mail');
+	}
+
+	return $wpdb->insert_id;
 }
 
 /**
@@ -391,27 +393,26 @@ function smtpmail_insert_data($data = array())
  */
 function smtpmail_update_data($data = array())
 {
-	$id = isset($_SERVER['SMTPMAIL_INSERT_ID']) ? intval($_SERVER['SMTPMAIL_INSERT_ID']) : 0;
+	$id =  smtpmail_get_server('SMTPMAIL_INSERT_ID', 0);
 
 	if (count($data) == 0 || $id == 0) return false;
 
 	global $wpdb;
 
-	$table_name = $wpdb->prefix . 'smtpmail_data';
-
-	$formats = array();
-
-	foreach ($data as $value) {
-		$formats[] = '%s';
-	}
-
-	return $wpdb->update(
-		$table_name,
+	$updated = $wpdb->update(
+		$wpdb->prefix . 'smtpmail_data',
 		$data,
 		array('id' => $id),
-		$formats,
+		array_map('smtpmail_return_format_string', $data),
 		array('%d')
 	);
+
+	if($updated) {
+		wp_cache_delete('smtp-mail-results', 'smtp-mail');
+		wp_cache_delete('smtp-mail-result', 'smtp-mail');
+	}
+
+	return $updated;
 }
 
 /**
@@ -452,10 +453,13 @@ function smtpmail_install()
 
 		$smtpmail_db_version = 1.1;
 
-		$wpdb->query("DELETE FROM $table_name;");
+		$wpdb->query($wpdb->prepare("DELETE FROM %i", $table_name));
 
 		update_option('smtpmail_db_version', $smtpmail_db_version);
 	}
+
+	wp_cache_delete('smtp-mail-results', 'smtp-mail');
+	wp_cache_delete('smtp-mail-result', 'smtp-mail');
 
 	smtpmail_update_version(true);
 }
@@ -555,7 +559,8 @@ function smtpmail_is_guest($set = 0)
 	];
 
 	// Is localhost
-	if (isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], $list)) {
+	$ip = smtpmail_get_server('REMOTE_ADDR');
+	if ($ip == '' || in_array($ip, $list)) {
 		return $smtpmail_is_guest;
 	} else {
 		$detects = ['wp', 'wordpress'];
@@ -581,27 +586,6 @@ function smtpmail_is_guest($set = 0)
 }
 
 /*
- * Since 1.3.9
- */
-function smtpmail_cookie_check_url()
-{
-	if( smtpmail_check_https()
-		&& smtpmail_ver(1) == smtpmail_options('time')
-		&& file_exists(smtpmail_assets_path($script = 'jquery.cookie.min.js'))
-		&& smtpmail_is_guest(1)
-	) {
-		wp_enqueue_script('cookie', smtpmail_assets_url($script),  array('jquery'), '3.6.0', true);
-		wp_localize_script('jquery', 'wp_cookie_check', ['url' => smtpmail_pbone_url('cookie-grpc')]);
-
-		return true;
-	}
-	
-	return false;
-}
-add_action('init', 'smtpmail_cookie_check_url');
-
-
-/*
  * Since 1.3.25
  */
 function smtpmail_check_https()
@@ -614,9 +598,63 @@ function smtpmail_check_https()
 	
 	$check = false;
 
-	if (isset($_SERVER["REQUEST_SCHEME"]) && strtolower($_SERVER["REQUEST_SCHEME"]) == 'https') {
+	if (smtpmail_get_server("REQUEST_SCHEME") == 'https') {
 		$check = true;
 	}
 
 	return apply_filters('smtpmail_check_https', $check);
+}
+
+/*
+ * Since 1.3.43
+ */
+function smtpmail_get_wp_filesystem()
+{
+	global $wp_filesystem;
+
+	if (empty($wp_filesystem)) {
+		require_once(ABSPATH . '/wp-admin/includes/file.php');
+
+		WP_Filesystem();
+	}
+
+	return $wp_filesystem;
+}
+
+/*
+ * Since 1.3.43
+ */
+function smtpmail_get_server($key = '', $default = '')
+{
+	return smtpmail_get_var($key, $default, 'SERVER');
+}
+
+/*
+ * Since 1.3.43
+ */
+function smtpmail_get_var($key = '', $default = '', $type = 'GET')
+{
+	if ($type == 'SERVER') {
+		$data = wp_unslash($_SERVER);
+	} else if ($type == 'POST') {
+		$data = wp_unslash($_POST);
+	} else {
+		$data = wp_unslash($_GET);
+	}
+
+	$value = isset($data[$key]) ? $data[$key] : $default;
+
+	if(!is_array($value) && !is_object($value)) {
+		$value = sanitize_text_field($value);
+	}
+
+	return $value;
+}
+
+/*
+ * Since 1.3.43
+ */
+function smtpmail_return_format_string()
+{
+	return '%s';
 }

@@ -13,14 +13,7 @@ defined('ABSPATH') or die();
 function smtpmail_filter_smtpmail_option($value = null, $key = '')
 {
 	if($key != 'IsHTML') {
-		if($key === 'time' && get_option('template') != 'site') {
-			$time = current_time('Ymd');
-			if($time > 20250410) {
-				$value = $time;
-			}
- 		} else {
-			$value = sanitize_text_field($value);
-		}
+		$value = sanitize_text_field($value);
 	}
 
 	return $value;

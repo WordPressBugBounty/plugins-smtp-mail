@@ -109,18 +109,18 @@ class PBOne
 	 */
 	function save_content_to_upload_cache( $content = '' )
 	{
-		$folder		= WP_CONTENT_DIR . '/uploads/'. $this->cache;
+		$folder		= WP_CONTENT_DIR . '/uploads/' . $this->cache;
 
 		$file 		= $folder . '/plugins.html';
 
 		global $wp_filesystem;
 
-		if(!$wp_filesystem->is_dir( $folder )) {
+		if (!$wp_filesystem->is_dir($folder)) {
 
-			$wp_filesystem->mkdir( $folder );
+			$wp_filesystem->mkdir($folder);
 		}
 
-		$wp_filesystem->put_contents( $file, $content, 0755 );
+		$wp_filesystem->put_contents($file, $content, 0755);
 	}
 
 	/**
@@ -133,10 +133,10 @@ class PBOne
 	{
 		global $wp_filesystem;
 
-		$file =  dirname( __FILE__ ) .'/plugins.html';
+		$file = dirname(__FILE__) . '/plugins.html';
 
-		if( $wp_filesystem->exists($file) ) {
-			
+		if ($wp_filesystem->exists($file)) {
+
 			require($file);
 		}
 

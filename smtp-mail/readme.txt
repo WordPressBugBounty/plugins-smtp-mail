@@ -1,12 +1,12 @@
 === SMTP Mail ===
 Contributors: photoboxone
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl.html
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: http://photoboxone.com/donate/?for=smtp-mail
 Tags: smtp, smtp setting, mail, phpmailer, send test
-Requires at least: 3.5
-Tested up to: 6.7.2
-Stable tag: 1.3.42
+Requires at least: 6.2
+Tested up to: 6.8.0
+Stable tag: 1.3.43
 
 SMTP settings, mail function, send test, save submitted data ( phpmailer ). It is very easy to configure and fast.
 
@@ -59,6 +59,11 @@ You can help translate `SMTP Mail` plugin on [translate.wordpress.org](https://t
 4. SMTP Mail - Submit data - detail.
 
 == Changelog ==  
+
+= 1.3.43 =
+* Updated all security: use esc_attr()
+* Updated functions
+* Tested to WordPress 6.8.0
 
 = 1.3.42 =
 * Updated functions
