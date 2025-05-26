@@ -5,7 +5,7 @@ Plugin URI: https://docs.photoboxone.com/smtp-mail.html
 Description: SMTP settings, mail function, send test, save submitted data. It is very easy to configure and fast.
 Author: Photoboxone
 Author URI: http://photoboxone.com/donate/?developer=photoboxone
-Version: 1.3.43
+Version: 1.3.44
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.2
