@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: http://photoboxone.com/donate/?for=smtp-mail
 Tags: smtp, smtp setting, mail, phpmailer, send test
 Requires at least: 6.2
-Tested up to: 6.8.1
+Tested up to: 6.8
 Stable tag: 1.3.44
 
 SMTP settings, mail function, send test, save submitted data ( phpmailer ). It is very easy to configure and fast.
