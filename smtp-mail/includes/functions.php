@@ -652,15 +652,17 @@ function smtpmail_get_server($key = '', $default = '')
 /*
  * Since 1.3.43
  */
-function smtpmail_get_var($key = '', $default = '', $type = 'GET')
+function smtpmail_get_var($key = '', $default = '', $type = '')
 {
 	if ($type == 'SERVER') {
-		$data = wp_unslash($_SERVER);
+		$data = $_SERVER;
 	} else if ($type == 'POST') {
-		$data = wp_unslash($_POST);
+		$data = $_POST;
 	} else {
-		$data = wp_unslash($_GET);
+		$data = $_GET;
 	}
+
+	$data = wp_unslash($data);
 
 	$value = isset($data[$key]) ? $data[$key] : $default;
 
